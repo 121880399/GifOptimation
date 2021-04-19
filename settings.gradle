@@ -1,0 +1,3 @@
+include ':gif_optimation'
+include ':app'
+rootProject.name = "GifOptimation"
