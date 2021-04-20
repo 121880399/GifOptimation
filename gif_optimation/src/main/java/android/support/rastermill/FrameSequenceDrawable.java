@@ -39,6 +39,10 @@ import android.os.HandlerThread;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 public class FrameSequenceDrawable extends Drawable implements Animatable, Runnable {
     private static final String TAG = "FrameSequence";
     /**
@@ -49,6 +53,9 @@ public class FrameSequenceDrawable extends Drawable implements Animatable, Runna
      */
     private static final long MIN_DELAY_MS = 20;
     private static final long DEFAULT_DELAY_MS = 100;
+
+    /** Raw GIF data from input source. */
+    private byte[] rawData;
 
     private static final Object sLock = new Object();
     private static HandlerThread sDecodingThread;
@@ -234,10 +241,11 @@ public class FrameSequenceDrawable extends Drawable implements Animatable, Runna
         return bitmap;
     }
     public FrameSequenceDrawable(FrameSequence frameSequence) {
-        this(frameSequence, sAllocatingBitmapProvider);
+        this(null,frameSequence, sAllocatingBitmapProvider);
     }
-    public FrameSequenceDrawable(FrameSequence frameSequence, BitmapProvider bitmapProvider) {
+    public FrameSequenceDrawable(byte[] rawData ,FrameSequence frameSequence, BitmapProvider bitmapProvider) {
         if (frameSequence == null || bitmapProvider == null) throw new IllegalArgumentException();
+        this.rawData = rawData;
         mFrameSequence = frameSequence;
         mFrameSequenceState = frameSequence.createState();
         final int width = frameSequence.getWidth();
@@ -469,5 +477,14 @@ public class FrameSequenceDrawable extends Drawable implements Animatable, Runna
     @Override
     public int getOpacity() {
         return mFrameSequence.isOpaque() ? PixelFormat.OPAQUE : PixelFormat.TRANSPARENT;
+    }
+
+    /**
+    * 得到原数据，可能为null
+    * 作者: ZhouZhengyi
+    * 创建时间: 2021/4/20 10:52
+    */
+    public byte[] getRawData() {
+        return rawData;
     }
 }
