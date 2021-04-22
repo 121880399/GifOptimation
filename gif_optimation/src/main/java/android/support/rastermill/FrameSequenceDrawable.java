@@ -313,6 +313,7 @@ public class FrameSequenceDrawable extends Drawable implements Animatable, Runna
                 mBackBitmap = null;
             }
             mDestroyed = true;
+            rawData = null;
         }
         // For simplicity and safety, we don't destroy the state object here
         mBitmapProvider.releaseBitmap(bitmapToReleaseA);
