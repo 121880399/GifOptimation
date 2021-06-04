@@ -5,9 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.rastermill.FrameSequenceDrawable;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 
@@ -30,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         String url = "http://5b0988e595225.cdn.sohucs.com/images/20190420/1d1070881fd540db817b2a3bdd967f37.gif";
         mImageView = findViewById(R.id.sample_img);
+        mButton = findViewById(R.id.btn_next);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,TestActivity.class);
+                startActivity(intent);
+            }
+        });
         //CPU:3% MEMORY:75.9
         GlideApp.with(this).asGif2().load(url).listener(new RequestListener<FrameSequenceDrawable>() {
             @Override
