@@ -34,9 +34,10 @@ typedef unsigned int GifPrefixType;
 typedef int GifWord;
 
 typedef struct GifColorType {
-    GifByteType Red, Green, Blue;
+    GifByteType Red, Green, Blue; /*rgb三种颜色*/
 } GifColorType;
 
+//表示颜色表的结构体，用来存储每一个像素的rgb颜色
 typedef struct ColorMapObject {
     int ColorCount;
     int BitsPerPixel;
@@ -44,21 +45,23 @@ typedef struct ColorMapObject {
     GifColorType *Colors;    /* on malloc(3) heap */
 } ColorMapObject;
 
+//图像的基本参数，宽高，颜色表，gif存储的是 顺序还是交错的方式
 typedef struct GifImageDesc {
     GifWord Left, Top, Width, Height;   /* Current image dimensions. */
     bool Interlace;                     /* Sequential/Interlaced lines. */
     ColorMapObject *ColorMap;           /* The local color map */
 } GifImageDesc;
 
+//数据块：字节数，字节表，块函数编码，表示是哪一种数据块（图形控制扩展，图形文本扩展等）
 typedef struct ExtensionBlock {
     int ByteCount;
     GifByteType *Bytes; /* on malloc(3) heap */
     int Function;       /* The block function code */
 #define CONTINUE_EXT_FUNC_CODE    0x00    /* continuation subblock */
-#define COMMENT_EXT_FUNC_CODE     0xfe    /* comment */
-#define GRAPHICS_EXT_FUNC_CODE    0xf9    /* graphics control (GIF89) */
-#define PLAINTEXT_EXT_FUNC_CODE   0x01    /* plaintext */
-#define APPLICATION_EXT_FUNC_CODE 0xff    /* application block */
+#define COMMENT_EXT_FUNC_CODE     0xfe    /* comment ：注释扩展*/
+#define GRAPHICS_EXT_FUNC_CODE    0xf9    /* graphics control (GIF89)：图形控制扩展（89a版本才有的） */
+#define PLAINTEXT_EXT_FUNC_CODE   0x01    /* plaintext ：图形文本扩展*/
+#define APPLICATION_EXT_FUNC_CODE 0xff    /* application block ：应用程序扩展*/
 } ExtensionBlock;
 
 typedef struct SavedImage {
@@ -69,18 +72,18 @@ typedef struct SavedImage {
 } SavedImage;
 
 typedef struct GifFileType {
-    GifWord SWidth, SHeight;         /* Size of virtual canvas */
-    GifWord SColorResolution;        /* How many colors can we generate? */
-    GifWord SBackGroundColor;        /* Background color for virtual canvas */
-    GifByteType AspectByte;	     /* Used to compute pixel aspect ratio */
-    ColorMapObject *SColorMap;       /* Global colormap, NULL if nonexistent. */
-    int ImageCount;                  /* Number of current image (both APIs) */
-    GifImageDesc Image;              /* Current image (low-level API) */
-    SavedImage *SavedImages;         /* Image sequence (high-level API) */
-    int ExtensionBlockCount;         /* Count extensions past last image */
-    ExtensionBlock *ExtensionBlocks; /* Extensions past last image */    
-    int Error;			     /* Last error condition reported */
-    void *UserData;                  /* hook to attach user data (TVT) */
+    GifWord SWidth, SHeight;         /* Size of virtual canvas ：Gif的逻辑宽高*/
+    GifWord SColorResolution;        /* How many colors can we generate?  : Gif文件需要生成多少种颜色，最大不会超过255*/
+    GifWord SBackGroundColor;        /* Background color for virtual canvas ： 画布的背景颜色*/
+    GifByteType AspectByte;	     /* Used to compute pixel aspect ratio ： 用来计算宽高比*/
+    ColorMapObject *SColorMap;       /* Global colormap, NULL if nonexistent. ：颜色列表，如果局部颜色列表为空，这边表示的就是全局颜色列表*/
+    int ImageCount;                  /* Number of current image (both APIs) ：gif的图像帧数*/
+    GifImageDesc Image;              /* Current image (low-level API) ：当前帧图像*/
+    SavedImage *SavedImages;         /* Image sequence (high-level API) ：用来存储已经读取过的图像数据*/
+    int ExtensionBlockCount;         /* Count extensions past last image ：表示图像扩展数据块数量*/
+    ExtensionBlock *ExtensionBlocks; /* Extensions past last image ：用来存储图像的数据块*/
+    int Error;			     /* Last error condition reported ：错误码*/
+    void *UserData;                  /* hook to attach user data (TVT) ：用来存储开发者的数据，类似view设置tag*/
     void *Private;                   /* Don't mess with this! */
 } GifFileType;
 
@@ -176,7 +179,7 @@ int EGifPutCodeNext(GifFileType *GifFile,
 ******************************************************************************/
 
 /* Main entry points */
-GifFileType *DGifOpenFileName(const char *GifFileName, int *Error);
+GifFD(const char *GifFileName, int *Error);
 GifFileType *DGifOpenFileHandle(int GifFileHandle, int *Error);
 int DGifSlurp(GifFileType * GifFile);
 GifFileType *DGifOpen(void *userPtr, InputFunc readFunc, int *Error);    /* new one (TVT) */

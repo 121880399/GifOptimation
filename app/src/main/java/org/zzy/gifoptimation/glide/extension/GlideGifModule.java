@@ -27,6 +27,6 @@ public class GlideGifModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        registry.append(Registry.BUCKET_GIF, InputStream.class, FrameSequenceDrawable.class,new GifDecoder(glide.getBitmapPool()));
+        registry.prepend(Registry.BUCKET_GIF, InputStream.class, FrameSequenceDrawable.class,new GifDecoder(glide.getBitmapPool()));
     }
 }

@@ -29,11 +29,21 @@ import java.nio.ByteBuffer;
  */
 public class GifDecoder implements ResourceDecoder<InputStream, FrameSequenceDrawable> {
     private static final String TAG = GifDecoder.class.getSimpleName();
+    private final FrameSequenceDrawable.BitmapProvider mProvider;
 
-    private BitmapPool mBitmapPool;
 
     public GifDecoder(BitmapPool bitmapPool){
-        this.mBitmapPool = bitmapPool;
+        this.mProvider = new FrameSequenceDrawable.BitmapProvider() {
+            @Override
+            public Bitmap acquireBitmap(int minWidth, int minHeight) {
+                return bitmapPool.getDirty(minWidth,minHeight,Bitmap.Config.ARGB_8888);
+            }
+
+            @Override
+            public void releaseBitmap(Bitmap bitmap) {
+                bitmapPool.put(bitmap);
+            }
+        };
     }
 
     @Override
@@ -48,17 +58,7 @@ public class GifDecoder implements ResourceDecoder<InputStream, FrameSequenceDra
         source.reset();
         byte[] data = inputStreamToBytes(source);
         Log.d("GifDecoder","data count"+data.length);
-        FrameSequenceDrawable frameSequenceDrawable = new FrameSequenceDrawable(data,frameSequence, new FrameSequenceDrawable.BitmapProvider() {
-            @Override
-            public Bitmap acquireBitmap(int minWidth, int minHeight) {
-                return mBitmapPool.get(minWidth,minHeight,Bitmap.Config.ARGB_8888);
-            }
-
-            @Override
-            public void releaseBitmap(Bitmap bitmap) {
-                mBitmapPool.put(bitmap);
-            }
-        });
+        FrameSequenceDrawable frameSequenceDrawable = new FrameSequenceDrawable(data,frameSequence,mProvider);
         return new GifResource(frameSequenceDrawable);
     }
 
