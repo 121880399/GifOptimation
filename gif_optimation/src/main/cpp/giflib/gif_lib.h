@@ -179,7 +179,7 @@ int EGifPutCodeNext(GifFileType *GifFile,
 ******************************************************************************/
 
 /* Main entry points */
-GifFD(const char *GifFileName, int *Error);
+int GifFD(const char *GifFileName, int *Error);
 GifFileType *DGifOpenFileHandle(int GifFileHandle, int *Error);
 int DGifSlurp(GifFileType * GifFile);
 GifFileType *DGifOpen(void *userPtr, InputFunc readFunc, int *Error);    /* new one (TVT) */
